@@ -1,0 +1,17 @@
+name: Build and push the Docker image
+
+on:
+  push:
+    paths:
+      - docker/**
+
+jobs:
+  build:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      - run: make -C docker build
+      - run: make -C docker release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        #if: github.event.push.ref == 'refs/heads/master'

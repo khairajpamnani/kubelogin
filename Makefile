@@ -1,5 +1,5 @@
 TARGET := kubelogin
-CIRCLE_TAG ?= HEAD
+CIRCLE_TAG ?= latest
 LDFLAGS := -X main.version=$(CIRCLE_TAG)
 
 all: $(TARGET)
@@ -35,3 +35,18 @@ release: dist
 clean:
 	-rm $(TARGET)
 	-rm -r dist/
+
+.PHONY: ci-setup-linux-amd64
+ci-setup-linux-amd64:
+	mkdir -p ~/bin
+	# https://github.com/golangci/golangci-lint
+	curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s -- -b ~/bin v1.21.0
+	# https://github.com/int128/goxzst
+	curl -sfL -o /tmp/goxzst.zip https://github.com/int128/goxzst/releases/download/v0.3.0/goxzst_linux_amd64.zip
+	unzip /tmp/goxzst.zip -d ~/bin
+	# https://github.com/int128/ghcp
+	curl -sfL -o /tmp/ghcp.zip https://github.com/int128/ghcp/releases/download/v1.5.1/ghcp_linux_amd64.zip
+	unzip /tmp/ghcp.zip -d ~/bin
+	# https://github.com/tcnksm/ghr
+	curl -sfL -o /tmp/ghr.tgz https://github.com/tcnksm/ghr/releases/download/v0.13.0/ghr_v0.13.0_linux_amd64.tar.gz
+	tar -xf /tmp/ghr.tgz -C ~/bin --strip-components 1 --wildcards "*/ghr"
